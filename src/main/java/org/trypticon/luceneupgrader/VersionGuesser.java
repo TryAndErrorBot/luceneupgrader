@@ -1,10 +1,10 @@
 package org.trypticon.luceneupgrader;
 
-import org.trypticon.luceneupgrader.lucene8.internal.lucene.index.SegmentInfos;
-import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.Directory;
-import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.FSDirectory;
-import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.IOContext;
-import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentInfos;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.Directory;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.FSDirectory;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IOContext;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class VersionGuesser {
                             throw new UnknownFormatException("Appears to be like version 5-6 but major version " +
                                     "is unrecognised: " + majorVersion);
                     }
-                } else if (actualVersion >= 7 && actualVersion <= 10) {      // VERSION_70 thru VERSION_86
+                } else if (actualVersion >= 7 && actualVersion <= 10) {      // VERSION_70 thru VERSION_97
                     // Skip over 16-byte ID.
                     segments.skipBytes(16);
 
@@ -102,6 +102,8 @@ public class VersionGuesser {
                             return LuceneVersion.VERSION_7;
                         case 8:
                             return LuceneVersion.VERSION_8;
+                        case 9:
+                            return LuceneVersion.VERSION_9;
                         default:
                             throw new UnknownFormatException("Appears to be like version 6-8 but major version " +
                                     "is unrecognised: " + createdVersion);
@@ -123,8 +125,9 @@ public class VersionGuesser {
                 } else if (format >= -11) {             // FORMAT_3_1, last format of 3.x
                     return LuceneVersion.VERSION_3;
                 } else {
-                    throw new UnknownFormatException("Appears to be like version 2-3 but format " +
-                            "is unrecognised: " + format);
+                    return LuceneVersion.VERSION_3;
+                    //throw new UnknownFormatException("Appears to be like version 2-3 but format " +
+                    //        "is unrecognised: " + format);
                 }
 
             } else {
