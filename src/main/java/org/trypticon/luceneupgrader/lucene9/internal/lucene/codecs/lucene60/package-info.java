@@ -15,4 +15,5 @@
  * limitations under the License.
  */
 
+/** Lucene 6.0 file format. */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene60;

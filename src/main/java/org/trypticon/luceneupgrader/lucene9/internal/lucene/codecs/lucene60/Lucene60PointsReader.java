@@ -16,7 +16,7 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene60;
 
-
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.store.EndiannessReverserUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PointsReader;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfo;
@@ -28,38 +28,43 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.bkd.BKDReader;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Lucene60PointsReader extends PointsReader implements Closeable {
+/** Reads point values previously written with Lucene60PointsWriter */
+public class Lucene60PointsReader extends PointsReader {
   final IndexInput dataIn;
   final SegmentReadState readState;
-  final Map<Integer,BKDReader> readers = new HashMap<>();
+  final Map<Integer, PointValues> readers = new HashMap<>();
 
+  /** Sole constructor */
   public Lucene60PointsReader(SegmentReadState readState) throws IOException {
     this.readState = readState;
 
+    String indexFileName =
+        IndexFileNames.segmentFileName(
+            readState.segmentInfo.name,
+            readState.segmentSuffix,
+            Lucene60PointsFormat.INDEX_EXTENSION);
 
-    String indexFileName = IndexFileNames.segmentFileName(readState.segmentInfo.name,
-                                                          readState.segmentSuffix,
-                                                          Lucene60PointsFormat.INDEX_EXTENSION);
-
-    Map<Integer,Long> fieldToFileOffset = new HashMap<>();
+    Map<Integer, Long> fieldToFileOffset = new HashMap<>();
 
     // Read index file
-    try (ChecksumIndexInput indexIn = readState.directory.openChecksumInput(indexFileName, readState.context)) {
+    try (ChecksumIndexInput indexIn =
+        EndiannessReverserUtil.openChecksumInput(
+            readState.directory, indexFileName, readState.context)) {
       Throwable priorE = null;
       try {
-        CodecUtil.checkIndexHeader(indexIn,
-                                   Lucene60PointsFormat.META_CODEC_NAME,
-                                   Lucene60PointsFormat.INDEX_VERSION_START,
-                                   Lucene60PointsFormat.INDEX_VERSION_CURRENT,
-                                   readState.segmentInfo.getId(),
-                                   readState.segmentSuffix);
+        CodecUtil.checkIndexHeader(
+            indexIn,
+            Lucene60PointsFormat.META_CODEC_NAME,
+            Lucene60PointsFormat.INDEX_VERSION_START,
+            Lucene60PointsFormat.INDEX_VERSION_CURRENT,
+            readState.segmentInfo.getId(),
+            readState.segmentSuffix);
         int count = indexIn.readVInt();
-        for(int i=0;i<count;i++) {
+        for (int i = 0; i < count; i++) {
           int fieldNumber = indexIn.readVInt();
           long fp = indexIn.readVLong();
           fieldToFileOffset.put(fieldNumber, fp);
@@ -71,19 +76,22 @@ public class Lucene60PointsReader extends PointsReader implements Closeable {
       }
     }
 
-    String dataFileName = IndexFileNames.segmentFileName(readState.segmentInfo.name,
-                                                         readState.segmentSuffix,
-                                                         Lucene60PointsFormat.DATA_EXTENSION);
+    String dataFileName =
+        IndexFileNames.segmentFileName(
+            readState.segmentInfo.name,
+            readState.segmentSuffix,
+            Lucene60PointsFormat.DATA_EXTENSION);
     boolean success = false;
-    dataIn = readState.directory.openInput(dataFileName, readState.context);
+    dataIn = EndiannessReverserUtil.openInput(readState.directory, dataFileName, readState.context);
     try {
 
-      CodecUtil.checkIndexHeader(dataIn,
-                                 Lucene60PointsFormat.DATA_CODEC_NAME,
-                                 Lucene60PointsFormat.DATA_VERSION_START,
-                                 Lucene60PointsFormat.DATA_VERSION_START,
-                                 readState.segmentInfo.getId(),
-                                 readState.segmentSuffix);
+      CodecUtil.checkIndexHeader(
+          dataIn,
+          Lucene60PointsFormat.DATA_CODEC_NAME,
+          Lucene60PointsFormat.DATA_VERSION_START,
+          Lucene60PointsFormat.DATA_VERSION_START,
+          readState.segmentInfo.getId(),
+          readState.segmentSuffix);
 
       // NOTE: data file is too costly to verify checksum against all the bytes on open,
       // but for now we at least verify proper structure of the checksum footer: which looks
@@ -91,11 +99,11 @@ public class Lucene60PointsReader extends PointsReader implements Closeable {
       // such as file truncation.
       CodecUtil.retrieveChecksum(dataIn);
 
-      for(Map.Entry<Integer,Long> ent : fieldToFileOffset.entrySet()) {
+      for (Map.Entry<Integer, Long> ent : fieldToFileOffset.entrySet()) {
         int fieldNumber = ent.getKey();
         long fp = ent.getValue();
         dataIn.seek(fp);
-        BKDReader reader = new BKDReader(dataIn, dataIn, dataIn);
+        PointValues reader = new BKDReader(dataIn, dataIn, dataIn);
         readers.put(fieldNumber, reader);
       }
 
@@ -107,6 +115,11 @@ public class Lucene60PointsReader extends PointsReader implements Closeable {
     }
   }
 
+  /**
+   * Returns the underlying {@link PointValues}.
+   *
+   * @lucene.internal
+   */
   @Override
   public PointValues getValues(String fieldName) {
     FieldInfo fieldInfo = readState.fieldInfos.fieldInfo(fieldName);
@@ -131,6 +144,4 @@ public class Lucene60PointsReader extends PointsReader implements Closeable {
     // Free up heap:
     readers.clear();
   }
-
 }
-  

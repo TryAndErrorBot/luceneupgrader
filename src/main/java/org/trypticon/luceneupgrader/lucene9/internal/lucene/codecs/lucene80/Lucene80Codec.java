@@ -16,10 +16,6 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene80;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.*;
-import org.trypticon.luceneupgrader.lucene8.internal.lucene.codecs.TermVectorsFormat;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.perfield.PerFieldDocValuesFormat;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.perfield.PerFieldPostingsFormat;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Lucene50CompoundFormat;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Lucene50LiveDocsFormat;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Lucene50StoredFieldsFormat;
@@ -27,43 +23,55 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Luce
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene60.Lucene60FieldInfosFormat;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene60.Lucene60PointsFormat;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene70.Lucene70SegmentInfoFormat;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.perfield.PerFieldDocValuesFormat;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.perfield.PerFieldPostingsFormat;
 
+/**
+ * Implements the Lucene 8.0 index format.
+ *
+ * @see org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene80 package documentation for file format details.
+ * @lucene.experimental
+ */
 public class Lucene80Codec extends Codec {
   private final TermVectorsFormat vectorsFormat = new Lucene50TermVectorsFormat();
   private final FieldInfosFormat fieldInfosFormat = new Lucene60FieldInfosFormat();
   private final SegmentInfoFormat segmentInfosFormat = new Lucene70SegmentInfoFormat();
   private final LiveDocsFormat liveDocsFormat = new Lucene50LiveDocsFormat();
   private final CompoundFormat compoundFormat = new Lucene50CompoundFormat();
-  
-  private final PostingsFormat postingsFormat = new PerFieldPostingsFormat() {
-    @Override
-    public PostingsFormat getPostingsFormatForField(String field) {
-      throw new UnsupportedOperationException("Old codecs can't be used for writing");
-    }
-  };
-  
-  private final DocValuesFormat docValuesFormat = new PerFieldDocValuesFormat() {
-    @Override
-    public DocValuesFormat getDocValuesFormatForField(String field) {
-      return defaultDVFormat;
-    }
-  };
+
+  private final PostingsFormat postingsFormat =
+      new PerFieldPostingsFormat() {
+        @Override
+        public PostingsFormat getPostingsFormatForField(String field) {
+          throw new UnsupportedOperationException("Old codecs can't be used for writing");
+        }
+      };
+
+  private final DocValuesFormat docValuesFormat =
+      new PerFieldDocValuesFormat() {
+        @Override
+        public DocValuesFormat getDocValuesFormatForField(String field) {
+          return defaultDVFormat;
+        }
+      };
   private final DocValuesFormat defaultDVFormat = DocValuesFormat.forName("Lucene80");
-  
+
   private final StoredFieldsFormat storedFieldsFormat;
 
+  /** Instantiates a new codec. */
   public Lucene80Codec() {
     super("Lucene80");
     this.storedFieldsFormat = new Lucene50StoredFieldsFormat();
   }
-  
+
   @Override
   public final StoredFieldsFormat storedFieldsFormat() {
     return storedFieldsFormat;
   }
-  
+
   @Override
-  public final TermVectorsFormat termVectorsFormat() {
+  public TermVectorsFormat termVectorsFormat() {
     return vectorsFormat;
   }
 
@@ -71,17 +79,17 @@ public class Lucene80Codec extends Codec {
   public final PostingsFormat postingsFormat() {
     return postingsFormat;
   }
-  
+
   @Override
   public final FieldInfosFormat fieldInfosFormat() {
     return fieldInfosFormat;
   }
-  
+
   @Override
   public final SegmentInfoFormat segmentInfoFormat() {
     return segmentInfosFormat;
   }
-  
+
   @Override
   public final LiveDocsFormat liveDocsFormat() {
     return liveDocsFormat;
@@ -96,7 +104,7 @@ public class Lucene80Codec extends Codec {
   public final PointsFormat pointsFormat() {
     return new Lucene60PointsFormat();
   }
-  
+
   @Override
   public final DocValuesFormat docValuesFormat() {
     return docValuesFormat;
@@ -107,5 +115,10 @@ public class Lucene80Codec extends Codec {
   @Override
   public final NormsFormat normsFormat() {
     return normsFormat;
+  }
+
+  @Override
+  public final KnnVectorsFormat knnVectorsFormat() {
+    return KnnVectorsFormat.EMPTY;
   }
 }

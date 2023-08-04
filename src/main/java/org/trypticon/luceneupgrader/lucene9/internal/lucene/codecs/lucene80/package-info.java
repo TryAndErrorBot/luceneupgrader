@@ -15,4 +15,5 @@
  * limitations under the License.
  */
 
+/** Components from the Lucene 8.0 index format. */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene80;

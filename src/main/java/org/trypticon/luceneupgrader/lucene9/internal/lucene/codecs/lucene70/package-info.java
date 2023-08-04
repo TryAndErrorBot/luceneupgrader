@@ -15,4 +15,8 @@
  * limitations under the License.
  */
 
+/**
+ * Components from the Lucene 7.0 index format. See {@link
+ * org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene86} for an overview of the current index format.
+ */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene70;
