@@ -96,7 +96,7 @@ public class VersionUpgrader9 implements VersionUpgrader {
             super(in);
 
             LeafMetaData superMetadata = super.getMetaData();
-            metadata = new LeafMetaData(9, Version.LUCENE_9_0_0, superMetadata.getSort());
+            metadata = new LeafMetaData(9, Version.LUCENE_9_7_1, superMetadata.getSort());
         }
 
         @Override
