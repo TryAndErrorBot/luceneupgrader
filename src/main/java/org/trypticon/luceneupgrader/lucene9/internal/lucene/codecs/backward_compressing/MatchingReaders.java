@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing;
+package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing;
 
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfo;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.MergeState;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentReader;
 
 /**
  * Computes which segments have identical field name to number mappings, which allows stored fields
@@ -29,14 +28,15 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentReader;
 public class MatchingReaders {
 
   /**
-   * {@link SegmentReader}s that have identical field name/number mapping, so their stored fields
-   * and term vectors may be bulk merged.
+   * {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentReader}s that have identical field name/number mapping,
+   * so their stored fields and term vectors may be bulk merged.
    */
   public final boolean[] matchingReaders;
 
   /** How many {@link #matchingReaders} are set. */
   final int count;
 
+  /** Sole constructor */
   public MatchingReaders(MergeState mergeState) {
     // If the i'th reader is a SegmentReader and has
     // identical fieldName -> number mapping, then this

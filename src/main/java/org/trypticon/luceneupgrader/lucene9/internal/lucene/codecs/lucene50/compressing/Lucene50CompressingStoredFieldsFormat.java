@@ -16,7 +16,7 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.compressing;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.CompressionMode;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.CompressionMode;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.packed.LegacyDirectMonotonicWriter;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.StoredFieldsFormat;

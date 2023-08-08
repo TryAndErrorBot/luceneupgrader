@@ -20,7 +20,7 @@
  *
  * <p>This terms dictionary organizes all terms into blocks according to shared prefix, such that
  * each block has enough terms, and then stores the prefix trie in memory as an FST as the index
- * structure. It allows you to plug in your own {@link org.apache.lucene.codecs.PostingsWriterBase}
+ * structure. It allows you to plug in your own {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PostingsWriterBase}
  * to implement the postings.
  *
  * <p>See {@code BlockTreeTermsWriter} for the file format.

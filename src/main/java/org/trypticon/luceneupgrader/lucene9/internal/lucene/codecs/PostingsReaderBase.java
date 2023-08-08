@@ -28,8 +28,8 @@ import java.io.IOException;
 
 /**
  * The core terms dictionaries (BlockTermsReader, BlockTreeTermsReader) interact with a single
- * instance of this class to manage creation of {@link PostingsEnum} and
- * {@link PostingsEnum} instances. It provides an IndexInput (termsIn) where
+ * instance of this class to manage creation of {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.index.PostingsEnum} and
+ * {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.index.PostingsEnum} instances. It provides an IndexInput (termsIn) where
  * this class may read any previously stored data that it had written in its corresponding {@link
  * PostingsWriterBase} at indexing time.
  *

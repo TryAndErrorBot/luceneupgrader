@@ -14,10 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing;
+package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing;
 
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.CorruptIndexException;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteBuffersDataInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
@@ -157,11 +156,8 @@ public abstract class CompressionMode {
     }
 
     @Override
-    public void compress(ByteBuffersDataInput buffersInput, DataOutput out) throws IOException {
-      final int len = (int) buffersInput.size();
-      byte[] bytes = new byte[len];
-      buffersInput.readBytes(bytes, 0, len);
-      LZ4.compress(bytes, 0, len, out, ht);
+    public void compress(byte[] bytes, int off, int len, DataOutput out) throws IOException {
+      LZ4.compress(bytes, off, len, out, ht);
     }
 
     @Override
@@ -179,11 +175,8 @@ public abstract class CompressionMode {
     }
 
     @Override
-    public void compress(ByteBuffersDataInput buffersInput, DataOutput out) throws IOException {
-      final int len = (int) buffersInput.size();
-      byte[] bytes = new byte[len];
-      buffersInput.readBytes(bytes, 0, len);
-      LZ4.compress(bytes, 0, len, out, ht);
+    public void compress(byte[] bytes, int off, int len, DataOutput out) throws IOException {
+      LZ4.compress(bytes, off, len, out, ht);
     }
 
     @Override
@@ -265,13 +258,9 @@ public abstract class CompressionMode {
     }
 
     @Override
-    public void compress(ByteBuffersDataInput buffersInput, DataOutput out) throws IOException {
-      final int len = (int) buffersInput.size();
-
-      byte[] bytes = new byte[len];
-      buffersInput.readBytes(bytes, 0, len);
+    public void compress(byte[] bytes, int off, int len, DataOutput out) throws IOException {
       compressor.reset();
-      compressor.setInput(bytes, 0, len);
+      compressor.setInput(bytes, off, len);
       compressor.finish();
 
       if (compressor.needsInput()) {

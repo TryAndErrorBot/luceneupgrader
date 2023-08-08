@@ -16,9 +16,9 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene87;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.CompressionMode;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.Compressor;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.Decompressor;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.CompressionMode;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.Compressor;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.Decompressor;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.store.EndiannessReverserUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.CorruptIndexException;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteBuffersDataOutput;

@@ -18,8 +18,8 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
 
 import java.io.IOException;
 

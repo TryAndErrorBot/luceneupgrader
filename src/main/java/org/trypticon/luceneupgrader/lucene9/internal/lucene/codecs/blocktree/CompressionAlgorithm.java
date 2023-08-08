@@ -16,9 +16,9 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.backward_codecs.store.EndiannessReverserUtil;
-import org.apache.lucene.store.DataInput;
-import org.apache.lucene.util.compress.LowercaseAsciiCompression;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.store.EndiannessReverserUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LowercaseAsciiCompression;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ enum CompressionAlgorithm {
 
     @Override
     void read(DataInput in, byte[] out, int len) throws IOException {
-      org.apache.lucene.util.compress.LZ4.decompress(
+      org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LZ4.decompress(
           EndiannessReverserUtil.wrapDataInput(in), len, out, 0);
     }
   };

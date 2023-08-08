@@ -16,7 +16,7 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene40.blocktree.Lucene40BlockTreeTermsReader;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree.Lucene40BlockTreeTermsReader;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.*;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentReadState;
@@ -111,7 +111,7 @@ import java.io.IOException;
  *             among width of integers hence smaller indexes. Larger block size result in more
  *             efficient bulk i/o hence better acceleration. This value should always be a multiple
  *             of 64, currently fixed as 128 as a tradeoff. It is also the skip interval used to
- *             accelerate {@link org.apache.lucene.index.PostingsEnum#advance(int)}.
+ *             accelerate {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.index.PostingsEnum#advance(int)}.
  *         <li>DocFPDelta determines the position of this term's TermFreqs within the .doc file. In
  *             particular, it is the difference of file offset between this term's data and previous
  *             term's data (or zero, for the first term in the block).On disk it is stored as the
@@ -393,7 +393,7 @@ public class Lucene50PostingsFormat extends PostingsFormat {
 
   /**
    * Holds all state required for {@link Lucene50PostingsReader} to produce a {@link
-   * org.apache.lucene.index.PostingsEnum} without re-seeking the terms dict.
+   * org.trypticon.luceneupgrader.lucene9.internal.lucene.index.PostingsEnum} without re-seeking the terms dict.
    *
    * @lucene.internal
    */

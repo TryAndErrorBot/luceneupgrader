@@ -16,18 +16,18 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.backward_codecs.store.EndiannessReverserUtil;
-import org.apache.lucene.codecs.CodecUtil;
-import org.apache.lucene.codecs.FieldsProducer;
-import org.apache.lucene.codecs.PostingsReaderBase;
-import org.apache.lucene.index.*;
-import org.apache.lucene.store.ChecksumIndexInput;
-import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.CollectionUtil;
-import org.apache.lucene.util.IOUtils;
-import org.apache.lucene.util.fst.ByteSequenceOutputs;
-import org.apache.lucene.util.fst.Outputs;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.store.EndiannessReverserUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.FieldsProducer;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PostingsReaderBase;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ChecksumIndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.CollectionUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.ByteSequenceOutputs;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Outputs;
 
 import java.io.IOException;
 import java.util.*;
@@ -47,7 +47,7 @@ import java.util.*;
  * (http://citeseer.ist.psu.edu/viewdoc/summary?doi=10.1.1.18.3499), but with added logic to break
  * up too-large blocks of all terms sharing a given prefix into smaller ones.
  *
- * <p>Use {@link org.apache.lucene.index.CheckIndex} with the <code>-verbose</code> option to see
+ * <p>Use {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.index.CheckIndex} with the <code>-verbose</code> option to see
  * summary statistics on the blocks in the dictionary.
  *
  * <p>See {@code BlockTreeTermsWriter}.

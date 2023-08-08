@@ -16,22 +16,10 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree;
 
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.FieldsProducer;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PostingsReaderBase;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.CorruptIndexException;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfo;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexFileNames;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentReadState;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.Terms;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.*;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ChecksumIndexInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IOContext;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
@@ -40,7 +28,6 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.CollectionUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.ByteSequenceOutputs;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Outputs;
-
 
 import java.io.IOException;
 import java.util.*;

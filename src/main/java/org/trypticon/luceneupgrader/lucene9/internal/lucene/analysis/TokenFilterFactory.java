@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * Abstract parent class for analysis factories that create {@link
- * org.apache.lucene.analysis.TokenFilter} instances.
+ * org.trypticon.luceneupgrader.lucene9.internal.lucene.analysis.TokenFilter} instances.
  *
  * @since 3.1
  */

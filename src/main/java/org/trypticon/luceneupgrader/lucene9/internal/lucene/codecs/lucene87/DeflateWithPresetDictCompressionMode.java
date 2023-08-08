@@ -16,9 +16,9 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene87;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.CompressionMode;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.Compressor;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.Decompressor;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.CompressionMode;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.Compressor;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.Decompressor;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.CorruptIndexException;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
@@ -162,11 +162,13 @@ public final class DeflateWithPresetDictCompressionMode extends CompressionMode 
   private static class DeflateWithPresetDictCompressor extends Compressor {
 
     final Deflater compressor;
+    final BugfixDeflater_JDK8252739 deflaterBugfix;
     byte[] compressed;
     boolean closed;
 
     DeflateWithPresetDictCompressor(int level) {
       compressor = new Deflater(level, true);
+      deflaterBugfix = BugfixDeflater_JDK8252739.createBugfix(compressor);
       compressed = new byte[64];
     }
 
@@ -213,7 +215,7 @@ public final class DeflateWithPresetDictCompressionMode extends CompressionMode 
       // And then sub blocks
       for (int start = off + dictLength; start < end; start += blockLength) {
         compressor.reset();
-        compressor.setDictionary(bytes, off, dictLength);
+        deflaterBugfix.setDictionary(bytes, off, dictLength);
         doCompress(bytes, start, Math.min(blockLength, off + len - start), out);
       }
     }

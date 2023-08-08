@@ -16,10 +16,10 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.codecs.PostingsReaderBase;
-import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.IOUtils;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PostingsReaderBase;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

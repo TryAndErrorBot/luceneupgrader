@@ -87,7 +87,7 @@ import java.util.Map;
  *       {@link DocValuesFormat}.
  *   <li>Attributes: a key-value map of codec-private attributes.
  *   <li>PointDimensionCount, PointNumBytes: these are non-zero only if the field is indexed as
- *       points, e.g. using {@link org.apache.lucene.document.LongPoint}
+ *       points, e.g. using {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.document.LongPoint}
  * </ul>
  *
  * @lucene.experimental

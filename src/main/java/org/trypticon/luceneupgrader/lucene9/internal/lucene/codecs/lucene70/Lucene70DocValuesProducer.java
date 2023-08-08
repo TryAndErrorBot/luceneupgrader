@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene80;
+package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene70;
 
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.packed.LegacyDirectMonotonicReader;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.packed.LegacyDirectReader;
@@ -23,18 +23,19 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.DocValuesProducer;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.*;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.TermsEnum.SeekStatus;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ChecksumIndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.RandomAccessInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.LongValues;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LZ4;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/** reader for {@link Lucene80DocValuesFormat} */
-final class Lucene80DocValuesProducer extends DocValuesProducer {
+/** reader for {@link Lucene70DocValuesFormat} */
+final class Lucene70DocValuesProducer extends DocValuesProducer {
   private final Map<String, NumericEntry> numerics = new HashMap<>();
   private final Map<String, BinaryEntry> binaries = new HashMap<>();
   private final Map<String, SortedEntry> sorted = new HashMap<>();
@@ -42,10 +43,9 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
   private final Map<String, SortedNumericEntry> sortedNumerics = new HashMap<>();
   private final IndexInput data;
   private final int maxDoc;
-  private int version = -1;
 
   /** expert: instantiates a new reader */
-  Lucene80DocValuesProducer(
+  Lucene70DocValuesProducer(
       SegmentReadState state,
       String dataCodec,
       String dataExtension,
@@ -56,23 +56,22 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
         IndexFileNames.segmentFileName(state.segmentInfo.name, state.segmentSuffix, metaExtension);
     this.maxDoc = state.segmentInfo.maxDoc();
 
+    int version = -1;
+
     // read in the entries from the metadata file.
     try (ChecksumIndexInput in =
         EndiannessReverserUtil.openChecksumInput(state.directory, metaName, state.context)) {
       Throwable priorE = null;
-
       try {
         version =
             CodecUtil.checkIndexHeader(
                 in,
                 metaCodec,
-                Lucene80DocValuesFormat.VERSION_START,
-                Lucene80DocValuesFormat.VERSION_CURRENT,
+                Lucene70DocValuesFormat.VERSION_START,
+                Lucene70DocValuesFormat.VERSION_CURRENT,
                 state.segmentInfo.getId(),
                 state.segmentSuffix);
-
-        readFields(state.segmentInfo.name, in, state.fieldInfos);
-
+        readFields(in, state.fieldInfos);
       } catch (Throwable exception) {
         priorE = exception;
       } finally {
@@ -89,8 +88,8 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
           CodecUtil.checkIndexHeader(
               data,
               dataCodec,
-              Lucene80DocValuesFormat.VERSION_START,
-              Lucene80DocValuesFormat.VERSION_CURRENT,
+              Lucene70DocValuesFormat.VERSION_START,
+              Lucene70DocValuesFormat.VERSION_CURRENT,
               state.segmentInfo.getId(),
               state.segmentSuffix);
       if (version != version2) {
@@ -112,40 +111,22 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     }
   }
 
-  private void readFields(String segmentName, IndexInput meta, FieldInfos infos)
-      throws IOException {
+  private void readFields(ChecksumIndexInput meta, FieldInfos infos) throws IOException {
     for (int fieldNumber = meta.readInt(); fieldNumber != -1; fieldNumber = meta.readInt()) {
       FieldInfo info = infos.fieldInfo(fieldNumber);
       if (info == null) {
         throw new CorruptIndexException("Invalid field number: " + fieldNumber, meta);
       }
       byte type = meta.readByte();
-      if (type == Lucene80DocValuesFormat.NUMERIC) {
+      if (type == Lucene70DocValuesFormat.NUMERIC) {
         numerics.put(info.name, readNumeric(meta));
-      } else if (type == Lucene80DocValuesFormat.BINARY) {
-        final boolean compressed;
-        if (version >= Lucene80DocValuesFormat.VERSION_CONFIGURABLE_COMPRESSION) {
-          String value = info.getAttribute(Lucene80DocValuesFormat.MODE_KEY);
-          if (value == null) {
-            throw new IllegalStateException(
-                "missing value for "
-                    + Lucene80DocValuesFormat.MODE_KEY
-                    + " for field: "
-                    + info.name
-                    + " in segment: "
-                    + segmentName);
-          }
-          Lucene80DocValuesFormat.Mode mode = Lucene80DocValuesFormat.Mode.valueOf(value);
-          compressed = mode == Lucene80DocValuesFormat.Mode.BEST_COMPRESSION;
-        } else {
-          compressed = version >= Lucene80DocValuesFormat.VERSION_BIN_COMPRESSED;
-        }
-        binaries.put(info.name, readBinary(meta, compressed));
-      } else if (type == Lucene80DocValuesFormat.SORTED) {
+      } else if (type == Lucene70DocValuesFormat.BINARY) {
+        binaries.put(info.name, readBinary(meta));
+      } else if (type == Lucene70DocValuesFormat.SORTED) {
         sorted.put(info.name, readSorted(meta));
-      } else if (type == Lucene80DocValuesFormat.SORTED_SET) {
+      } else if (type == Lucene70DocValuesFormat.SORTED_SET) {
         sortedSets.put(info.name, readSortedSet(meta));
-      } else if (type == Lucene80DocValuesFormat.SORTED_NUMERIC) {
+      } else if (type == Lucene70DocValuesFormat.SORTED_NUMERIC) {
         sortedNumerics.put(info.name, readSortedNumeric(meta));
       } else {
         throw new CorruptIndexException("invalid type: " + type, meta);
@@ -153,17 +134,15 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     }
   }
 
-  private NumericEntry readNumeric(IndexInput meta) throws IOException {
+  private NumericEntry readNumeric(ChecksumIndexInput meta) throws IOException {
     NumericEntry entry = new NumericEntry();
     readNumeric(meta, entry);
     return entry;
   }
 
-  private void readNumeric(IndexInput meta, NumericEntry entry) throws IOException {
+  private void readNumeric(ChecksumIndexInput meta, NumericEntry entry) throws IOException {
     entry.docsWithFieldOffset = meta.readLong();
     entry.docsWithFieldLength = meta.readLong();
-    entry.jumpTableEntryCount = meta.readShort();
-    entry.denseRankPower = meta.readByte();
     entry.numValues = meta.readLong();
     int tableSize = meta.readInt();
     if (tableSize > 256) {
@@ -185,47 +164,31 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     entry.gcd = meta.readLong();
     entry.valuesOffset = meta.readLong();
     entry.valuesLength = meta.readLong();
-    entry.valueJumpTableOffset = meta.readLong();
   }
 
-  private BinaryEntry readBinary(IndexInput meta, boolean compressed) throws IOException {
-    final BinaryEntry entry = new BinaryEntry();
-    entry.compressed = compressed;
+  private BinaryEntry readBinary(ChecksumIndexInput meta) throws IOException {
+    BinaryEntry entry = new BinaryEntry();
     entry.dataOffset = meta.readLong();
     entry.dataLength = meta.readLong();
     entry.docsWithFieldOffset = meta.readLong();
     entry.docsWithFieldLength = meta.readLong();
-    entry.jumpTableEntryCount = meta.readShort();
-    entry.denseRankPower = meta.readByte();
     entry.numDocsWithField = meta.readInt();
     entry.minLength = meta.readInt();
     entry.maxLength = meta.readInt();
-    if ((entry.compressed && entry.numDocsWithField > 0) || entry.minLength < entry.maxLength) {
+    if (entry.minLength < entry.maxLength) {
       entry.addressesOffset = meta.readLong();
-
-      // Old count of uncompressed addresses
-      long numAddresses = entry.numDocsWithField + 1L;
-      // New count of compressed addresses - the number of compresseed blocks
-      if (entry.compressed) {
-        entry.numCompressedChunks = meta.readVInt();
-        entry.docsPerChunkShift = meta.readVInt();
-        entry.maxUncompressedChunkSize = meta.readVInt();
-        numAddresses = entry.numCompressedChunks;
-      }
-
       final int blockShift = meta.readVInt();
-      entry.addressesMeta = LegacyDirectMonotonicReader.loadMeta(meta, numAddresses, blockShift);
+      entry.addressesMeta =
+          LegacyDirectMonotonicReader.loadMeta(meta, entry.numDocsWithField + 1L, blockShift);
       entry.addressesLength = meta.readLong();
     }
     return entry;
   }
 
-  private SortedEntry readSorted(IndexInput meta) throws IOException {
+  private SortedEntry readSorted(ChecksumIndexInput meta) throws IOException {
     SortedEntry entry = new SortedEntry();
     entry.docsWithFieldOffset = meta.readLong();
     entry.docsWithFieldLength = meta.readLong();
-    entry.jumpTableEntryCount = meta.readShort();
-    entry.denseRankPower = meta.readByte();
     entry.numDocsWithField = meta.readInt();
     entry.bitsPerValue = meta.readByte();
     entry.ordsOffset = meta.readLong();
@@ -234,7 +197,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     return entry;
   }
 
-  private SortedSetEntry readSortedSet(IndexInput meta) throws IOException {
+  private SortedSetEntry readSortedSet(ChecksumIndexInput meta) throws IOException {
     SortedSetEntry entry = new SortedSetEntry();
     byte multiValued = meta.readByte();
     switch (multiValued) {
@@ -248,8 +211,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     }
     entry.docsWithFieldOffset = meta.readLong();
     entry.docsWithFieldLength = meta.readLong();
-    entry.jumpTableEntryCount = meta.readShort();
-    entry.denseRankPower = meta.readByte();
     entry.bitsPerValue = meta.readByte();
     entry.ordsOffset = meta.readLong();
     entry.ordsLength = meta.readLong();
@@ -263,27 +224,16 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     return entry;
   }
 
-  private static void readTermDict(IndexInput meta, TermsDictEntry entry) throws IOException {
+  private static void readTermDict(ChecksumIndexInput meta, TermsDictEntry entry)
+      throws IOException {
     entry.termsDictSize = meta.readVLong();
-    int termsDictBlockCode = meta.readInt();
-    if (Lucene80DocValuesFormat.TERMS_DICT_BLOCK_LZ4_CODE == termsDictBlockCode) {
-      // This is a LZ4 compressed block.
-      entry.compressed = true;
-      entry.termsDictBlockShift = Lucene80DocValuesFormat.TERMS_DICT_BLOCK_LZ4_SHIFT;
-    } else {
-      entry.termsDictBlockShift = termsDictBlockCode;
-    }
-
+    entry.termsDictBlockShift = meta.readInt();
     final int blockShift = meta.readInt();
     final long addressesSize =
         (entry.termsDictSize + (1L << entry.termsDictBlockShift) - 1) >>> entry.termsDictBlockShift;
     entry.termsAddressesMeta =
         LegacyDirectMonotonicReader.loadMeta(meta, addressesSize, blockShift);
     entry.maxTermLength = meta.readInt();
-    // Read one more int for compressed term dict.
-    if (entry.compressed) {
-      entry.maxBlockLength = meta.readInt();
-    }
     entry.termsDataOffset = meta.readLong();
     entry.termsDataLength = meta.readLong();
     entry.termsAddressesOffset = meta.readLong();
@@ -299,7 +249,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     entry.termsIndexAddressesLength = meta.readLong();
   }
 
-  private SortedNumericEntry readSortedNumeric(IndexInput meta) throws IOException {
+  private SortedNumericEntry readSortedNumeric(ChecksumIndexInput meta) throws IOException {
     SortedNumericEntry entry = new SortedNumericEntry();
     readNumeric(meta, entry);
     entry.numDocsWithField = meta.readInt();
@@ -324,33 +274,24 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     byte bitsPerValue;
     long docsWithFieldOffset;
     long docsWithFieldLength;
-    short jumpTableEntryCount;
-    byte denseRankPower;
     long numValues;
     long minValue;
     long gcd;
     long valuesOffset;
     long valuesLength;
-    long valueJumpTableOffset; // -1 if no jump-table
   }
 
   private static class BinaryEntry {
-    boolean compressed;
     long dataOffset;
     long dataLength;
     long docsWithFieldOffset;
     long docsWithFieldLength;
-    short jumpTableEntryCount;
-    byte denseRankPower;
     int numDocsWithField;
     int minLength;
     int maxLength;
     long addressesOffset;
     long addressesLength;
     LegacyDirectMonotonicReader.Meta addressesMeta;
-    int numCompressedChunks;
-    int docsPerChunkShift;
-    int maxUncompressedChunkSize;
   }
 
   private static class TermsDictEntry {
@@ -368,16 +309,11 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     long termsIndexLength;
     long termsIndexAddressesOffset;
     long termsIndexAddressesLength;
-
-    boolean compressed;
-    int maxBlockLength;
   }
 
   private static class SortedEntry extends TermsDictEntry {
     long docsWithFieldOffset;
     long docsWithFieldLength;
-    short jumpTableEntryCount;
-    byte denseRankPower;
     int numDocsWithField;
     byte bitsPerValue;
     long ordsOffset;
@@ -388,8 +324,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     SortedEntry singleValueEntry;
     long docsWithFieldOffset;
     long docsWithFieldLength;
-    short jumpTableEntryCount;
-    byte denseRankPower;
     int numDocsWithField;
     byte bitsPerValue;
     long ordsOffset;
@@ -503,12 +437,41 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
             data.randomAccessSlice(entry.valuesOffset, entry.valuesLength);
         if (entry.blockShift >= 0) {
           // dense but split into blocks of different bits per value
+          final int shift = entry.blockShift;
+          final long mul = entry.gcd;
+          final int mask = (1 << shift) - 1;
           return new DenseNumericDocValues(maxDoc) {
-            final VaryingBPVReader vBPVReader = new VaryingBPVReader(entry, slice);
+            int block = -1;
+            long delta;
+            long offset;
+            long blockEndOffset;
+            LongValues values;
 
             @Override
             public long longValue() throws IOException {
-              return vBPVReader.getLongValue(doc);
+              final int block = doc >>> shift;
+              if (this.block != block) {
+                int bitsPerValue;
+                do {
+                  offset = blockEndOffset;
+                  bitsPerValue = slice.readByte(offset++);
+                  delta = slice.readLong(offset);
+                  offset += Long.BYTES;
+                  if (bitsPerValue == 0) {
+                    blockEndOffset = offset;
+                  } else {
+                    final int length = slice.readInt(offset);
+                    offset += Integer.BYTES;
+                    blockEndOffset = offset + length;
+                  }
+                  this.block++;
+                } while (this.block != block);
+                values =
+                    bitsPerValue == 0
+                        ? LongValues.ZEROES
+                        : LegacyDirectReader.getInstance(slice, bitsPerValue, offset);
+              }
+              return mul * values.get(doc & mask) + delta;
             }
           };
         } else {
@@ -537,12 +500,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       // sparse
       final IndexedDISI disi =
           new IndexedDISI(
-              data,
-              entry.docsWithFieldOffset,
-              entry.docsWithFieldLength,
-              entry.jumpTableEntryCount,
-              entry.denseRankPower,
-              entry.numValues);
+              data, entry.docsWithFieldOffset, entry.docsWithFieldLength, entry.numValues);
       if (entry.bitsPerValue == 0) {
         return new SparseNumericDocValues(disi) {
           @Override
@@ -555,13 +513,42 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
             data.randomAccessSlice(entry.valuesOffset, entry.valuesLength);
         if (entry.blockShift >= 0) {
           // sparse and split into blocks of different bits per value
+          final int shift = entry.blockShift;
+          final long mul = entry.gcd;
+          final int mask = (1 << shift) - 1;
           return new SparseNumericDocValues(disi) {
-            final VaryingBPVReader vBPVReader = new VaryingBPVReader(entry, slice);
+            int block = -1;
+            long delta;
+            long offset;
+            long blockEndOffset;
+            LongValues values;
 
             @Override
             public long longValue() throws IOException {
               final int index = disi.index();
-              return vBPVReader.getLongValue(index);
+              final int block = index >>> shift;
+              if (this.block != block) {
+                int bitsPerValue;
+                do {
+                  offset = blockEndOffset;
+                  bitsPerValue = slice.readByte(offset++);
+                  delta = slice.readLong(offset);
+                  offset += Long.BYTES;
+                  if (bitsPerValue == 0) {
+                    blockEndOffset = offset;
+                  } else {
+                    final int length = slice.readInt(offset);
+                    offset += Integer.BYTES;
+                    blockEndOffset = offset + length;
+                  }
+                  this.block++;
+                } while (this.block != block);
+                values =
+                    bitsPerValue == 0
+                        ? LongValues.ZEROES
+                        : LegacyDirectReader.getInstance(slice, bitsPerValue, offset);
+              }
+              return mul * values.get(index & mask) + delta;
             }
           };
         } else {
@@ -601,16 +588,47 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       final RandomAccessInput slice =
           data.randomAccessSlice(entry.valuesOffset, entry.valuesLength);
       if (entry.blockShift >= 0) {
+        final int shift = entry.blockShift;
+        final long mul = entry.gcd;
+        final long mask = (1L << shift) - 1;
         return new LongValues() {
-          final VaryingBPVReader vBPVReader = new VaryingBPVReader(entry, slice);
+          long block = -1;
+          long delta;
+          long offset;
+          long blockEndOffset;
+          LongValues values;
 
           @Override
           public long get(long index) {
-            try {
-              return vBPVReader.getLongValue(index);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
+            final long block = index >>> shift;
+            if (this.block != block) {
+              assert block > this.block
+                  : "Reading backwards is illegal: " + this.block + " < " + block;
+              int bitsPerValue;
+              do {
+                offset = blockEndOffset;
+                try {
+                  bitsPerValue = slice.readByte(offset++);
+                  delta = slice.readLong(offset);
+                  offset += Long.BYTES;
+                  if (bitsPerValue == 0) {
+                    blockEndOffset = offset;
+                  } else {
+                    final int length = slice.readInt(offset);
+                    offset += Integer.BYTES;
+                    blockEndOffset = offset + length;
+                  }
+                } catch (IOException e) {
+                  throw new RuntimeException(e);
+                }
+                this.block++;
+              } while (this.block != block);
+              values =
+                  bitsPerValue == 0
+                      ? LongValues.ZEROES
+                      : LegacyDirectReader.getInstance(slice, bitsPerValue, offset);
             }
+            return mul * values.get(index & mask) + delta;
           }
         };
       } else {
@@ -720,7 +738,9 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     }
   }
 
-  private BinaryDocValues getUncompressedBinary(BinaryEntry entry) throws IOException {
+  @Override
+  public BinaryDocValues getBinary(FieldInfo field) throws IOException {
+    BinaryEntry entry = binaries.get(field.name);
     if (entry.docsWithFieldOffset == -2) {
       return DocValues.emptyBinary();
     }
@@ -765,12 +785,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       // sparse
       final IndexedDISI disi =
           new IndexedDISI(
-              data,
-              entry.docsWithFieldOffset,
-              entry.docsWithFieldLength,
-              entry.jumpTableEntryCount,
-              entry.denseRankPower,
-              entry.numDocsWithField);
+              data, entry.docsWithFieldOffset, entry.docsWithFieldLength, entry.numDocsWithField);
       if (entry.minLength == entry.maxLength) {
         // fixed length
         final int length = entry.maxLength;
@@ -804,152 +819,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
           }
         };
       }
-    }
-  }
-
-  // Decompresses blocks of binary values to retrieve content
-  static class BinaryDecoder {
-
-    private final LongValues addresses;
-    private final IndexInput compressedData;
-    // Cache of last uncompressed block
-    private long lastBlockId = -1;
-    private final int[] uncompressedDocStarts;
-    private int uncompressedBlockLength = 0;
-    private final byte[] uncompressedBlock;
-    private final BytesRef uncompressedBytesRef;
-    private final int docsPerChunk;
-    private final int docsPerChunkShift;
-
-    public BinaryDecoder(
-        LongValues addresses,
-        IndexInput compressedData,
-        int biggestUncompressedBlockSize,
-        int docsPerChunkShift) {
-      super();
-      this.addresses = addresses;
-      this.compressedData = compressedData;
-      // pre-allocate a byte array large enough for the biggest uncompressed block needed.
-      this.uncompressedBlock = new byte[biggestUncompressedBlockSize];
-      uncompressedBytesRef = new BytesRef(uncompressedBlock);
-      this.docsPerChunk = 1 << docsPerChunkShift;
-      this.docsPerChunkShift = docsPerChunkShift;
-      uncompressedDocStarts = new int[docsPerChunk + 1];
-    }
-
-    BytesRef decode(int docNumber) throws IOException {
-      int blockId = docNumber >> docsPerChunkShift;
-      int docInBlockId = docNumber % docsPerChunk;
-      assert docInBlockId < docsPerChunk;
-
-      // already read and uncompressed?
-      if (blockId != lastBlockId) {
-        lastBlockId = blockId;
-        long blockStartOffset = addresses.get(blockId);
-        compressedData.seek(blockStartOffset);
-
-        uncompressedBlockLength = 0;
-
-        int onlyLength = -1;
-        for (int i = 0; i < docsPerChunk; i++) {
-          if (i == 0) {
-            // The first length value is special. It is shifted and has a bit to denote if
-            // all other values are the same length
-            int lengthPlusSameInd = compressedData.readVInt();
-            int sameIndicator = lengthPlusSameInd & 1;
-            int firstValLength = lengthPlusSameInd >>> 1;
-            if (sameIndicator == 1) {
-              onlyLength = firstValLength;
-            }
-            uncompressedBlockLength += firstValLength;
-          } else {
-            if (onlyLength == -1) {
-              // Various lengths are stored - read each from disk
-              uncompressedBlockLength += compressedData.readVInt();
-            } else {
-              // Only one length
-              uncompressedBlockLength += onlyLength;
-            }
-          }
-          uncompressedDocStarts[i + 1] = uncompressedBlockLength;
-        }
-
-        if (uncompressedBlockLength == 0) {
-          uncompressedBytesRef.offset = 0;
-          uncompressedBytesRef.length = 0;
-          return uncompressedBytesRef;
-        }
-
-        assert uncompressedBlockLength <= uncompressedBlock.length;
-        LZ4.decompress(
-            EndiannessReverserUtil.wrapDataInput(compressedData),
-            uncompressedBlockLength,
-            uncompressedBlock,
-            0);
-      }
-
-      uncompressedBytesRef.offset = uncompressedDocStarts[docInBlockId];
-      uncompressedBytesRef.length =
-          uncompressedDocStarts[docInBlockId + 1] - uncompressedBytesRef.offset;
-      return uncompressedBytesRef;
-    }
-  }
-
-  @Override
-  public BinaryDocValues getBinary(FieldInfo field) throws IOException {
-    BinaryEntry entry = binaries.get(field.name);
-    if (entry.compressed) {
-      return getCompressedBinary(entry);
-    } else {
-      return getUncompressedBinary(entry);
-    }
-  }
-
-  private BinaryDocValues getCompressedBinary(BinaryEntry entry) throws IOException {
-
-    if (entry.docsWithFieldOffset == -2) {
-      return DocValues.emptyBinary();
-    }
-    if (entry.docsWithFieldOffset == -1) {
-      // dense
-      final RandomAccessInput addressesData =
-          this.data.randomAccessSlice(entry.addressesOffset, entry.addressesLength);
-      final LongValues addresses =
-          LegacyDirectMonotonicReader.getInstance(entry.addressesMeta, addressesData);
-      return new DenseBinaryDocValues(maxDoc) {
-        BinaryDecoder decoder =
-            new BinaryDecoder(
-                addresses, data.clone(), entry.maxUncompressedChunkSize, entry.docsPerChunkShift);
-
-        @Override
-        public BytesRef binaryValue() throws IOException {
-          return decoder.decode(doc);
-        }
-      };
-    } else {
-      // sparse
-      final IndexedDISI disi =
-          new IndexedDISI(
-              data,
-              entry.docsWithFieldOffset,
-              entry.docsWithFieldLength,
-              entry.jumpTableEntryCount,
-              entry.denseRankPower,
-              entry.numDocsWithField);
-      final RandomAccessInput addressesData =
-          this.data.randomAccessSlice(entry.addressesOffset, entry.addressesLength);
-      final LongValues addresses =
-          LegacyDirectMonotonicReader.getInstance(entry.addressesMeta, addressesData);
-      return new SparseBinaryDocValues(disi) {
-        BinaryDecoder decoder =
-            new BinaryDecoder(
-                addresses, data.clone(), entry.maxUncompressedChunkSize, entry.docsPerChunkShift);
-
-        @Override
-        public BytesRef binaryValue() throws IOException {
-          return decoder.decode(disi.index());
-        }
-      };
     }
   }
 
@@ -1022,12 +891,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       // sparse
       final IndexedDISI disi =
           new IndexedDISI(
-              data,
-              entry.docsWithFieldOffset,
-              entry.docsWithFieldLength,
-              entry.jumpTableEntryCount,
-              entry.denseRankPower,
-              entry.numDocsWithField);
+              data, entry.docsWithFieldOffset, entry.docsWithFieldLength, entry.numDocsWithField);
       return new BaseSortedDocValues(entry, data) {
 
         @Override
@@ -1148,7 +1012,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
   }
 
   private static class TermsDict extends BaseTermsEnum {
-    static final int LZ4_DECOMPRESSOR_PADDING = 7;
 
     final TermsDictEntry entry;
     final LongValues blockAddresses;
@@ -1158,11 +1021,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
     final IndexInput indexBytes;
     final BytesRef term;
     long ord = -1;
-
-    BytesRef blockBuffer = null;
-    ByteArrayDataInput blockInput = null;
-    long currentCompressedBlockStart = -1;
-    long currentCompressedBlockEnd = -1;
 
     TermsDict(TermsDictEntry entry, IndexInput data) throws IOException {
       this.entry = entry;
@@ -1179,12 +1037,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
               entry.termsIndexAddressesMeta, indexAddressesSlice);
       indexBytes = data.slice("terms-index", entry.termsIndexOffset, entry.termsIndexLength);
       term = new BytesRef(entry.maxTermLength);
-
-      if (entry.compressed) {
-        // add 7 padding bytes can help decompression run faster.
-        int bufferSize = entry.maxBlockLength + LZ4_DECOMPRESSOR_PADDING;
-        blockBuffer = new BytesRef(new byte[bufferSize], 0, bufferSize);
-      }
     }
 
     @Override
@@ -1192,27 +1044,21 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       if (++ord >= entry.termsDictSize) {
         return null;
       }
-
       if ((ord & blockMask) == 0L) {
-        if (this.entry.compressed) {
-          decompressBlock();
-        } else {
-          term.length = bytes.readVInt();
-          bytes.readBytes(term.bytes, 0, term.length);
-        }
+        term.length = bytes.readVInt();
+        bytes.readBytes(term.bytes, 0, term.length);
       } else {
-        DataInput input = this.entry.compressed ? blockInput : bytes;
-        final int token = Byte.toUnsignedInt(input.readByte());
+        final int token = Byte.toUnsignedInt(bytes.readByte());
         int prefixLength = token & 0x0F;
         int suffixLength = 1 + (token >>> 4);
         if (prefixLength == 15) {
-          prefixLength += input.readVInt();
+          prefixLength += bytes.readVInt();
         }
         if (suffixLength == 16) {
-          suffixLength += input.readVInt();
+          suffixLength += bytes.readVInt();
         }
         term.length = prefixLength + suffixLength;
-        input.readBytes(term.bytes, prefixLength, suffixLength);
+        bytes.readBytes(term.bytes, prefixLength, suffixLength);
       }
       return term;
     }
@@ -1311,13 +1157,8 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       final long blockAddress = blockAddresses.get(block);
       this.ord = block << entry.termsDictBlockShift;
       bytes.seek(blockAddress);
-      if (this.entry.compressed) {
-        decompressBlock();
-      } else {
-        term.length = bytes.readVInt();
-        bytes.readBytes(term.bytes, 0, term.length);
-      }
-
+      term.length = bytes.readVInt();
+      bytes.readBytes(term.bytes, 0, term.length);
       while (true) {
         int cmp = term.compareTo(text);
         if (cmp == 0) {
@@ -1328,31 +1169,6 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
         if (next() == null) {
           return SeekStatus.END;
         }
-      }
-    }
-
-    private void decompressBlock() throws IOException {
-      // The first term is kept uncompressed, so no need to decompress block if only
-      // look up the first term when doing seek block.
-      term.length = bytes.readVInt();
-      bytes.readBytes(term.bytes, 0, term.length);
-      long offset = bytes.getFilePointer();
-      if (offset < entry.termsDataLength - 1) {
-        // Avoid decompress again if we are reading a same block.
-        if (currentCompressedBlockStart != offset) {
-          int decompressLength = bytes.readVInt();
-          // Decompress the remaining of current block
-          LZ4.decompress(
-              EndiannessReverserUtil.wrapDataInput(bytes), decompressLength, blockBuffer.bytes, 0);
-          currentCompressedBlockStart = offset;
-          currentCompressedBlockEnd = bytes.getFilePointer();
-        } else {
-          // Skip decompression but need to re-seek to block end.
-          bytes.seek(currentCompressedBlockEnd);
-        }
-
-        // Reset the buffer.
-        blockInput = new ByteArrayDataInput(blockBuffer.bytes, 0, blockBuffer.length);
       }
     }
 
@@ -1458,12 +1274,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       // sparse
       final IndexedDISI disi =
           new IndexedDISI(
-              data,
-              entry.docsWithFieldOffset,
-              entry.docsWithFieldLength,
-              entry.jumpTableEntryCount,
-              entry.denseRankPower,
-              entry.numDocsWithField);
+              data, entry.docsWithFieldOffset, entry.docsWithFieldLength, entry.numDocsWithField);
       return new SortedNumericDocValues() {
 
         boolean set;
@@ -1598,12 +1409,7 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
       // sparse
       final IndexedDISI disi =
           new IndexedDISI(
-              data,
-              entry.docsWithFieldOffset,
-              entry.docsWithFieldLength,
-              entry.jumpTableEntryCount,
-              entry.denseRankPower,
-              entry.numDocsWithField);
+              data, entry.docsWithFieldOffset, entry.docsWithFieldLength, entry.numDocsWithField);
       return new BaseSortedSetDocValues(entry, data) {
 
         boolean set;
@@ -1674,72 +1480,5 @@ final class Lucene80DocValuesProducer extends DocValuesProducer {
   @Override
   public void checkIntegrity() throws IOException {
     CodecUtil.checksumEntireFile(data);
-  }
-
-  /**
-   * Reader for longs split into blocks of different bits per values. The longs are requested by
-   * index and must be accessed in monotonically increasing order.
-   */
-  // Note: The order requirement could be removed as the jump-tables allow for backwards iteration
-  // Note 2: The rankSlice is only used if an advance of > 1 block is called. Its construction could
-  // be lazy
-  private class VaryingBPVReader {
-    final RandomAccessInput slice; // 2 slices to avoid cache thrashing when using rank
-    final RandomAccessInput rankSlice;
-    final NumericEntry entry;
-    final int shift;
-    final long mul;
-    final int mask;
-
-    long block = -1;
-    long delta;
-    long offset;
-    long blockEndOffset;
-    LongValues values;
-
-    VaryingBPVReader(NumericEntry entry, RandomAccessInput slice) throws IOException {
-      this.entry = entry;
-      this.slice = slice;
-      this.rankSlice =
-          entry.valueJumpTableOffset == -1
-              ? null
-              : data.randomAccessSlice(
-                  entry.valueJumpTableOffset, data.length() - entry.valueJumpTableOffset);
-      shift = entry.blockShift;
-      mul = entry.gcd;
-      mask = (1 << shift) - 1;
-    }
-
-    long getLongValue(long index) throws IOException {
-      final long block = index >>> shift;
-      if (this.block != block) {
-        int bitsPerValue;
-        do {
-          // If the needed block is the one directly following the current block, it is cheaper to
-          // avoid the cache
-          if (rankSlice != null && block != this.block + 1) {
-            blockEndOffset = rankSlice.readLong(block * Long.BYTES) - entry.valuesOffset;
-            this.block = block - 1;
-          }
-          offset = blockEndOffset;
-          bitsPerValue = slice.readByte(offset++);
-          delta = slice.readLong(offset);
-          offset += Long.BYTES;
-          if (bitsPerValue == 0) {
-            blockEndOffset = offset;
-          } else {
-            final int length = slice.readInt(offset);
-            offset += Integer.BYTES;
-            blockEndOffset = offset + length;
-          }
-          this.block++;
-        } while (this.block != block);
-        values =
-            bitsPerValue == 0
-                ? LongValues.ZEROES
-                : LegacyDirectReader.getInstance(slice, bitsPerValue, offset);
-      }
-      return mul * values.get(index & mask) + delta;
-    }
   }
 }

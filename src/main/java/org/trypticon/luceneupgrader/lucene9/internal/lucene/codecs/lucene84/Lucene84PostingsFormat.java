@@ -16,7 +16,7 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene84;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene40.blocktree.Lucene40BlockTreeTermsReader;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree.Lucene40BlockTreeTermsReader;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.*;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentReadState;

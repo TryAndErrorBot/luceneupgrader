@@ -16,18 +16,18 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.index.*;
-import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.RamUsageEstimator;
-import org.apache.lucene.util.StringHelper;
-import org.apache.lucene.util.automaton.ByteRunnable;
-import org.apache.lucene.util.automaton.Transition;
-import org.apache.lucene.util.automaton.TransitionAccessor;
-import org.apache.lucene.util.fst.ByteSequenceOutputs;
-import org.apache.lucene.util.fst.FST;
-import org.apache.lucene.util.fst.Outputs;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.RamUsageEstimator;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.StringHelper;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.automaton.Automaton;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.automaton.RunAutomaton;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.automaton.Transition;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.ByteSequenceOutputs;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.FST;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Outputs;
 
 import java.io.IOException;
 
@@ -50,8 +50,8 @@ final class IntersectTermsEnum extends BaseTermsEnum {
   @SuppressWarnings({"rawtypes", "unchecked"})
   private FST.Arc<BytesRef>[] arcs = new FST.Arc[5];
 
-  final ByteRunnable runAutomaton;
-  final TransitionAccessor automaton;
+  final RunAutomaton runAutomaton;
+  final Automaton automaton;
   final BytesRef commonSuffix;
 
   private IntersectTermsEnumFrame currentFrame;
@@ -69,8 +69,8 @@ final class IntersectTermsEnum extends BaseTermsEnum {
   // regexp foo*bar must be at least length 6 bytes
   public IntersectTermsEnum(
       FieldReader fr,
-      TransitionAccessor automaton,
-      ByteRunnable runAutomaton,
+      Automaton automaton,
+      RunAutomaton runAutomaton,
       BytesRef commonSuffix,
       BytesRef startTerm)
       throws IOException {

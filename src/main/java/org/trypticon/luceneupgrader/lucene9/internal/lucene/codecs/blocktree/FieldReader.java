@@ -16,17 +16,17 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.index.FieldInfo;
-import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.store.ByteArrayDataInput;
-import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.automaton.CompiledAutomaton;
-import org.apache.lucene.util.fst.ByteSequenceOutputs;
-import org.apache.lucene.util.fst.FST;
-import org.apache.lucene.util.fst.OffHeapFSTStore;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfo;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.Terms;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.TermsEnum;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteArrayDataInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.automaton.CompiledAutomaton;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.ByteSequenceOutputs;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.FST;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.OffHeapFSTStore;
 
 import java.io.IOException;
 
@@ -189,11 +189,7 @@ public final class FieldReader extends Terms {
       throw new IllegalArgumentException("please use CompiledAutomaton.getTermsEnum instead");
     }
     return new IntersectTermsEnum(
-        this,
-        compiled.getTransitionAccessor(),
-        compiled.getByteRunnable(),
-        compiled.commonSuffixRef,
-        startTerm);
+        this, compiled.automaton, compiled.runAutomaton, compiled.commonSuffixRef, startTerm);
   }
 
   @Override

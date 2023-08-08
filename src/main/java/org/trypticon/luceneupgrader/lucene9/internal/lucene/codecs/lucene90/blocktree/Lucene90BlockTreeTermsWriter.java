@@ -16,42 +16,22 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree;
 
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteArrayDataOutput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteBuffersDataOutput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexOutput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.*;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LZ4;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LowercaseAsciiCompression;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.BlockTermState;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.FieldsConsumer;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.NormsProducer;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PostingsWriterBase;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfo;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfos;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.Fields;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexFileNames;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentWriteState;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.Terms;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.TermsEnum;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteArrayDataOutput;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteBuffersDataOutput;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexOutput;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRefBuilder;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.FixedBitSet;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IntsRefBuilder;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.StringHelper;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LZ4;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LowercaseAsciiCompression;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.ByteSequenceOutputs;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.BytesRefFSTEnum;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.FST;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.FSTCompiler;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Util;
 
 /*
   TODO:
@@ -212,10 +192,16 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Util;
  */
 public final class Lucene90BlockTreeTermsWriter extends FieldsConsumer {
 
-
+  /**
+   * Suggested default value for the {@code minItemsInBlock} parameter to {@link
+   * #Lucene90BlockTreeTermsWriter(SegmentWriteState,PostingsWriterBase,int,int)}.
+   */
   public static final int DEFAULT_MIN_BLOCK_SIZE = 25;
 
-
+  /**
+   * Suggested default value for the {@code maxItemsInBlock} parameter to {@link
+   * #Lucene90BlockTreeTermsWriter(SegmentWriteState,PostingsWriterBase,int,int)}.
+   */
   public static final int DEFAULT_MAX_BLOCK_SIZE = 48;
 
   // public static boolean DEBUG = false;

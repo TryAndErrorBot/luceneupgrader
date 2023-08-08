@@ -14,16 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing;
 
-/**
- * BlockTree terms dictionary.
- *
- * <p>This terms dictionary organizes all terms into blocks according to shared prefix, such that
- * each block has enough terms, and then stores the prefix trie in memory as an FST as the index
- * structure. It allows you to plug in your own {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.PostingsWriterBase}
- * to implement the postings.
- *
- * <p>See {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree.Lucene90BlockTreeTermsWriter} for the
- * file format.
- */
-package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataOutput;
+
+import java.io.Closeable;
+import java.io.IOException;
+
+/** A data compressor. */
+public abstract class Compressor implements Closeable {
+
+  /** Sole constructor, typically called from sub-classes. */
+  protected Compressor() {}
+
+  /**
+   * Compress bytes into <code>out</code>. It is the responsibility of the compressor to add all
+   * necessary information so that a {@link Decompressor} will know when to stop decompressing bytes
+   * from the stream.
+   */
+  public abstract void compress(byte[] bytes, int off, int len, DataOutput out) throws IOException;
+}

@@ -16,7 +16,6 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree;
 
-
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.FieldInfo;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.Terms;

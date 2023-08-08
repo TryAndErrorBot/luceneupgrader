@@ -12,7 +12,7 @@ plugins {
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
-    withJavadocJar()
+    //withJavadocJar()
     withSourcesJar()
 }
 
@@ -27,9 +27,9 @@ application {
     mainClass.set("org.trypticon.luceneupgrader.cli.Main")
 }
 
-tasks.javadoc {
-    exclude("**/internal/**/*.java")
-}
+//tasks.javadoc {
+//    exclude("**/internal/**/*.java")
+//}
 
 tasks.jar {
     manifest {

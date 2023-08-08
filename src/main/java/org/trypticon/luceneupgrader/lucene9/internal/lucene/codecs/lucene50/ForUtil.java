@@ -29,7 +29,6 @@ import java.util.Arrays;
 
 import static org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Lucene50PostingsFormat.BLOCK_SIZE;
 
-
 /**
  * Encode all values in normal area with fixed bit width, which is determined by the max value in
  * this block.

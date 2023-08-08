@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing;
+package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing;
 
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
@@ -38,7 +38,7 @@ public abstract class Decompressor implements Cloneable {
    * @param originalLength the length of the original data (before compression)
    * @param offset bytes before this offset do not need to be decompressed
    * @param length bytes after <code>offset+length</code> do not need to be decompressed
-   * @param bytes a {@link BytesRef} where to store the decompressed data
+   * @param bytes a {@link org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef} where to store the decompressed data
    */
   public abstract void decompress(
       DataInput in, int originalLength, int offset, int length, BytesRef bytes) throws IOException;

@@ -16,14 +16,14 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.codecs.BlockTermState;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexOptions;
-import org.apache.lucene.index.TermsEnum.SeekStatus;
-import org.apache.lucene.store.ByteArrayDataInput;
-import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.fst.FST;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.BlockTermState;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.CorruptIndexException;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.IndexOptions;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.TermsEnum.SeekStatus;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteArrayDataInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.FST;
 
 import java.io.IOException;
 import java.util.Arrays;

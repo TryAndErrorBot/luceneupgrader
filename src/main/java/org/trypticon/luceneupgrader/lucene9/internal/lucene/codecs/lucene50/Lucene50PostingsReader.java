@@ -31,9 +31,9 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.IOUtils;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.apache.lucene.codecs.lucene50.ForUtil.MAX_DATA_SIZE;
-import static org.apache.lucene.codecs.lucene50.ForUtil.MAX_ENCODED_SIZE;
-import static org.apache.lucene.codecs.lucene50.Lucene50PostingsFormat.*;
+import static org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.ForUtil.MAX_DATA_SIZE;
+import static org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.ForUtil.MAX_ENCODED_SIZE;
+import static org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Lucene50PostingsFormat.*;
 
 /**
  * Concrete class that reads docId(maybe frq,pos,offset,payloads) list with postings format.

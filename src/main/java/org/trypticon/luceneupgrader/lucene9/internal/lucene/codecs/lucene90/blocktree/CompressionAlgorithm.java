@@ -16,7 +16,6 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree;
 
-
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.DataInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.compress.LowercaseAsciiCompression;
 

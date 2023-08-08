@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.lucene.analysis.standard;
+package org.trypticon.luceneupgrader.lucene9.internal.lucene.analysis.standard;
 
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.analysis.tokenattributes.CharTermAttribute;
 
 /**
  * This class implements Word Break rules from the Unicode Text Segmentation 

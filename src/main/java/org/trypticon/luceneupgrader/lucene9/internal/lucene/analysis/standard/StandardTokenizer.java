@@ -121,7 +121,7 @@ public final class StandardTokenizer extends Tokenizer {
   /*
    * (non-Javadoc)
    *
-   * @see org.apache.lucene.analysis.TokenStream#next()
+   * @see org.trypticon.luceneupgrader.lucene9.internal.lucene.analysis.TokenStream#next()
    */
   @Override
   public final boolean incrementToken() throws IOException {

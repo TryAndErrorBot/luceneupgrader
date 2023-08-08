@@ -16,8 +16,8 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.compressing;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.CompressionMode;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.compressing.Decompressor;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.CompressionMode;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.backward_compressing.Decompressor;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.store.EndiannessReverserUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.CodecUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.StoredFieldsReader;

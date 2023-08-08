@@ -16,11 +16,7 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene90.blocktree;
 
-
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.BaseTermsEnum;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.ImpactsEnum;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.PostingsEnum;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.TermState;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.*;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
 import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
@@ -35,7 +31,13 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Outputs;
 
 import java.io.IOException;
 
-
+/**
+ * This is used to implement efficient {@link Terms#intersect} for block-tree. Note that it cannot
+ * seek, except for the initial term on init. It just "nexts" through the intersection of the
+ * automaton and the terms. It does not use the terms index at all: on init, it loads the root
+ * block, and scans its way to the initial term. Likewise, in next it scans until it finds a term
+ * that matches the current automaton transition.
+ */
 final class IntersectTermsEnum extends BaseTermsEnum {
 
   // static boolean DEBUG = BlockTreeTermsWriter.DEBUG;

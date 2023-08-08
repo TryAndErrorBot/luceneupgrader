@@ -22,7 +22,7 @@ import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.trypticon.luceneupgrader.lucene9.internal.codecs.lucene50.Lucene50PostingsFormat.BLOCK_SIZE;
+import static org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene50.Lucene50PostingsFormat.BLOCK_SIZE;
 
 /**
  * Implements the skip list reader for block postings format that stores positions and payloads.

@@ -16,19 +16,19 @@
  */
 package org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.blocktree;
 
-import org.apache.lucene.codecs.BlockTermState;
-import org.apache.lucene.index.BaseTermsEnum;
-import org.apache.lucene.index.ImpactsEnum;
-import org.apache.lucene.index.PostingsEnum;
-import org.apache.lucene.index.TermState;
-import org.apache.lucene.store.ByteArrayDataInput;
-import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.BytesRefBuilder;
-import org.apache.lucene.util.RamUsageEstimator;
-import org.apache.lucene.util.fst.FST;
-import org.apache.lucene.util.fst.Util;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.BlockTermState;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.BaseTermsEnum;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.ImpactsEnum;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.PostingsEnum;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.TermState;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.ByteArrayDataInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.ArrayUtil;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRef;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.BytesRefBuilder;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.RamUsageEstimator;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.FST;
+import org.trypticon.luceneupgrader.lucene9.internal.lucene.util.fst.Util;
 
 import java.io.IOException;
 import java.io.PrintStream;
