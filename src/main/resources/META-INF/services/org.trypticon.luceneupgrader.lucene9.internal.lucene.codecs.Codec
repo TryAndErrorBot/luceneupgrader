@@ -13,9 +13,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-org.trypticon.luceneupgrader.lucene8.internal.lucene.codecs.lucene87.Lucene87Codec
-
-org.trypticon.luceneupgrader.lucene8.internal.lucene.codecs.lucene70.Lucene70Codec
-org.trypticon.luceneupgrader.lucene8.internal.lucene.codecs.lucene80.Lucene80Codec
-org.trypticon.luceneupgrader.lucene8.internal.lucene.codecs.lucene84.Lucene84Codec
-org.trypticon.luceneupgrader.lucene8.internal.lucene.codecs.lucene86.Lucene86Codec
+org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene80.Lucene80Codec
+org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene84.Lucene84Codec
+org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene86.Lucene86Codec
+org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene87.Lucene87Codec
+org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene70.Lucene70Codec
+org.trypticon.luceneupgrader.lucene9.internal.lucene.codecs.lucene95.Lucene95Codec

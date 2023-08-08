@@ -140,43 +140,14 @@ public final class Version {
     @Deprecated
     public static final Version LUCENE_8_11_1 = new Version(8, 11, 1);
 
-    @Deprecated
     public static final Version LUCENE_8_11_2 = new Version(8, 11, 2);
 
-    @Deprecated
-    public static final Version LUCENE_9_0_0 = new Version(9, 0, 0);
-
-    @Deprecated
-    public static final Version LUCENE_9_1_0 = new Version(9, 1, 0);
-
-    @Deprecated
-    public static final Version LUCENE_9_2_0 = new Version(9, 2, 0);
-
-    @Deprecated
-    public static final Version LUCENE_9_3_0 = new Version(9, 3, 0);
-
-    @Deprecated
-    public static final Version LUCENE_9_4_0 = new Version(9, 4, 0);
-
-    @Deprecated
-    public static final Version LUCENE_9_4_1 = new Version(9, 4, 1);
-
-    @Deprecated
-    public static final Version LUCENE_9_4_2 = new Version(9, 4, 2);
-
-    @Deprecated
-    public static final Version LUCENE_9_5_0 = new Version(9, 5, 0);
-
-    @Deprecated
-    public static final Version LUCENE_9_6_0 = new Version(9, 6, 0);
-
-    public static final Version LUCENE_9_7_0 = new Version(9, 7, 0);
 
     // To add a new version:
     //  * Only add above this comment
     //  * If the new version is the newest, change LATEST below and deprecate the previous LATEST
 
-    public static final Version LATEST = LUCENE_9_7_0;
+    public static final Version LATEST = LUCENE_8_11_2;
 
     @Deprecated
     public static final Version LUCENE_CURRENT = LATEST;

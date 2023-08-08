@@ -1,10 +1,10 @@
 package org.trypticon.luceneupgrader;
 
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.index.SegmentInfos;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.Directory;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.FSDirectory;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IOContext;
-import org.trypticon.luceneupgrader.lucene9.internal.lucene.store.IndexInput;
+import org.trypticon.luceneupgrader.lucene8.internal.lucene.index.SegmentInfos;
+import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.Directory;
+import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.FSDirectory;
+import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.IOContext;
+import org.trypticon.luceneupgrader.lucene8.internal.lucene.store.IndexInput;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -125,9 +125,8 @@ public class VersionGuesser {
                 } else if (format >= -11) {             // FORMAT_3_1, last format of 3.x
                     return LuceneVersion.VERSION_3;
                 } else {
-                    return LuceneVersion.VERSION_3;
-                    //throw new UnknownFormatException("Appears to be like version 2-3 but format " +
-                    //        "is unrecognised: " + format);
+                    throw new UnknownFormatException("Appears to be like version 2-3 but format " +
+                            "is unrecognised: " + format);
                 }
 
             } else {
