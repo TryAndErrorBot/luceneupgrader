@@ -21,7 +21,7 @@ To upgrade an index all the way to version 8:
 
 ```java
 new IndexUpgrader(textIndexPath, null)
-    .upgradeTo(LuceneVersion.VERSION_8);
+    .upgradeTo(LuceneVersion.VERSION_9);
 ```
 
 The upgrade will be a no-op if the index is already at that version.
