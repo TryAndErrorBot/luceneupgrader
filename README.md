@@ -5,6 +5,9 @@ This project attempts to make a single tool to upgrade Lucene indexes all the
 way through multiple versions. It does this by repackaging older versions of
 Lucene and using the IndexUpgrader tool from each version in turn.
 
+Actual Lucene Version
+------------------
+Version 9.7.1
 
 Usage as a Library
 ------------------
