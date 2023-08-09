@@ -1,5 +1,5 @@
 
-version = "0.6.1-SNAPSHOT"
+version = "0.7.0-SNAPSHOT"
 group = "garden.ephemeral.luceneupgrader"
 description = "Lucene Index Upgrader"
 
